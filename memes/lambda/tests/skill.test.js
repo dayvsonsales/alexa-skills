@@ -5,7 +5,14 @@ const jokes = require("../jokes");
 const alexa = va.VirtualAlexa.Builder()
   .handler("index.handler")
   .interactionModelFile(
-    path.join(__dirname, "..", "interactionModels", "custom", "pt-BR.json")
+    path.join(
+      __dirname,
+      "..",
+      "..",
+      "interactionModels",
+      "custom",
+      "pt-BR.json"
+    )
   )
   .create();
 
