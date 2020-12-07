@@ -1,12 +1,12 @@
 {
-  "name": "hello-world",
-  "version": "1.2.0",
-  "description": "alexa utility for quickly building skills",
+  "name": "aprendendo-a-contar",
+  "version": "1.0.0",
+  "description": "An learning count alexa skill",
+  "author": "Dayvson Sales",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
-  "author": "Amazon Alexa",
   "license": "Apache License",
   "dependencies": {
     "ask-sdk-core": "^2.7.0",
