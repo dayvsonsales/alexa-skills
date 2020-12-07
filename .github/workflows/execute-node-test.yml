@@ -3,9 +3,7 @@
 
 name: Run tests
 
-on:
-  release:
-    types: [created]
+on: push
 
 jobs:
   memes_test:
