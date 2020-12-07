@@ -1,58 +1,67 @@
 /* eslint-disable  func-names */
 /* eslint-disable  no-console */
 
-const Alexa = require('ask-sdk-core');
-const jokes = require('./jokes');
+const Alexa = require("ask-sdk-core");
+const jokes = require("./jokes");
 
-const SKILL_NAME = 'Memes Para Cegos';
+const SKILL_NAME = "Memes Para Cegos";
 const FALLBACK_MESSAGE = `Infelizmente aconteceu um erro!`;
-const FALLBACK_REPROMPT = 'Como posso te ajudar?';
-const APL_DOC = require ('./document/renderPage.json' ) ; 
-const TWO_PAGER_COMMANDS =  require ('./document/twoSpeakItemsCommand.json' ) ;
-const ONE_PAGER_COMMANDS =  require ('./document/oneSpeakItemCommand.json' ) ;
-const TOKEN_ID = 'pagerSample';
+const FALLBACK_REPROMPT = "Como posso te ajudar?";
+const APL_DOC = require("./document/renderPage.json");
+const TWO_PAGER_COMMANDS = require("./document/twoSpeakItemsCommand.json");
+const ONE_PAGER_COMMANDS = require("./document/oneSpeakItemCommand.json");
+const TOKEN_ID = "pagerSample";
 const firstTransformerList = [
-      {
-          "inputPath": "phraseSsml",
-          "outputName": "phraseAsSpeech",
-          "transformer": "ssmlToSpeech"
-      }
-    ];
+  {
+    inputPath: "phraseSsml",
+    outputName: "phraseAsSpeech",
+    transformer: "ssmlToSpeech",
+  },
+];
 const secondTransformerList = [
-      {
-          "inputPath": "phraseSsml",
-          "outputName": "nextPhraseAsSpeech",
-          "transformer": "ssmlToSpeech"
-      }
-    ];
+  {
+    inputPath: "phraseSsml",
+    outputName: "nextPhraseAsSpeech",
+    transformer: "ssmlToSpeech",
+  },
+];
 
-function makePage(phraseText="",repromptText="",phraseSSMLProperty="",transformerList=[]) {
+function makePage(
+  phraseText = "",
+  repromptText = "",
+  phraseSSMLProperty = "",
+  transformerList = []
+) {
   return {
-    "phraseText" : phraseText ,
-    "repromptText":repromptText,
-    "properties" :  {
-      "phraseSsml" : phraseSSMLProperty
+    phraseText: phraseText,
+    repromptText: repromptText,
+    properties: {
+      phraseSsml: phraseSSMLProperty,
     },
-    "transformers": transformerList
+    transformers: transformerList,
   };
 }
 
 function supportsDisplay(handlerInput) {
-  return handlerInput.requestEnvelope.context
-      && handlerInput.requestEnvelope.context.System
-      && handlerInput.requestEnvelope.context.System.device
-      && handlerInput.requestEnvelope.context.System.device.supportedInterfaces
-      && (handlerInput.requestEnvelope.context.System.device.supportedInterfaces['Alexa.Presentation.APL']
-        || handlerInput.requestEnvelope.context.System.device.supportedInterfaces.Display)
-      && handlerInput.requestEnvelope.context.Viewport;
+  return (
+    handlerInput.requestEnvelope.context &&
+    handlerInput.requestEnvelope.context.System &&
+    handlerInput.requestEnvelope.context.System.device &&
+    handlerInput.requestEnvelope.context.System.device.supportedInterfaces &&
+    (handlerInput.requestEnvelope.context.System.device.supportedInterfaces[
+      "Alexa.Presentation.APL"
+    ] ||
+      handlerInput.requestEnvelope.context.System.device.supportedInterfaces
+        .Display) &&
+    handlerInput.requestEnvelope.context.Viewport
+  );
 }
 
 function randomJoke(handlerInput) {
-  const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
   const sessionAttributes = {};
 
   const arrJokes = jokes.MEMES;
-  
+
   const joke = arrJokes[Math.floor(Math.random() * (arrJokes.length - 1))];
 
   Object.assign(sessionAttributes, {
@@ -64,7 +73,7 @@ function randomJoke(handlerInput) {
   return handlerInput.responseBuilder
     .speak(joke)
     .reprompt(joke)
-    .withSimpleCard('Memes para cegos', joke)
+    .withSimpleCard("Memes para cegos", joke)
     .withShouldEndSession(true)
     .getResponse();
 }
@@ -73,9 +82,11 @@ const LaunchRequest = {
   canHandle(handlerInput) {
     const { request } = handlerInput.requestEnvelope;
 
-    return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest'
-        && request.intent.name === 'AMAZON.StartOverIntent');
+    return (
+      request.type === "LaunchRequest" ||
+      (request.type === "IntentRequest" &&
+        request.intent.name === "AMAZON.StartOverIntent")
+    );
   },
   handle(handlerInput) {
     return randomJoke(handlerInput);
@@ -84,10 +95,12 @@ const LaunchRequest = {
 
 const SessionEndedRequest = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    return handlerInput.requestEnvelope.request.type === "SessionEndedRequest";
   },
   handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+    console.log(
+      `Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`
+    );
 
     return handlerInput.responseBuilder.getResponse();
   },
@@ -95,38 +108,46 @@ const SessionEndedRequest = {
 
 const StopIntent = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent';
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "AMAZON.StopIntent"
+    );
   },
   handle(handlerInput) {
     let speechOutput = "Tchau! Volte para mais piadas!";
     if (supportsDisplay(handlerInput)) {
       let payload = {
-        "phrase": makePage(speechOutput,speechOutput,`<speak>${speechOutput}</speak>`,firstTransformerList),
-        "nextPhrase": makePage("none","<speak></speak>","<speak></speak>",secondTransformerList)
-        };
+        phrase: makePage(
+          speechOutput,
+          speechOutput,
+          `<speak>${speechOutput}</speak>`,
+          firstTransformerList
+        ),
+        nextPhrase: makePage(
+          "none",
+          "<speak></speak>",
+          "<speak></speak>",
+          secondTransformerList
+        ),
+      };
       speechOutput = "";
 
       handlerInput.responseBuilder
-      .addDirective( 
-        {
-          type: 'Alexa.Presentation.APL.RenderDocument',
-          version: '1.1',
-          document : APL_DOC  ,
-          datasources : payload ,
-          token : TOKEN_ID ,
+        .addDirective({
+          type: "Alexa.Presentation.APL.RenderDocument",
+          version: "1.1",
+          document: APL_DOC,
+          datasources: payload,
+          token: TOKEN_ID,
         })
-        .addDirective (
-          {
-            type: 'Alexa.Presentation.APL.ExecuteCommands',
-            token : TOKEN_ID ,
-            commands :
-            [
-              ONE_PAGER_COMMANDS
-            ]
-          });
+        .addDirective({
+          type: "Alexa.Presentation.APL.ExecuteCommands",
+          token: TOKEN_ID,
+          commands: [ONE_PAGER_COMMANDS],
+        });
     }
-    return handlerInput.responseBuilder.speak(speechOutput)
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
       .withShouldEndSession(true)
       .getResponse();
   },
@@ -134,73 +155,85 @@ const StopIntent = {
 
 const CancelIntent = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent';
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "AMAZON.CancelIntent"
+    );
   },
   handle(handlerInput) {
     let speechOutput = "Ok. Cancelado!";
     if (supportsDisplay(handlerInput)) {
       let payload = {
-        "phrase": makePage(speechOutput,speechOutput,`<speak>${speechOutput}</speak>`,firstTransformerList),
-        "nextPhrase": makePage("none","<speak></speak>","<speak></speak>",secondTransformerList)
-        };
+        phrase: makePage(
+          speechOutput,
+          speechOutput,
+          `<speak>${speechOutput}</speak>`,
+          firstTransformerList
+        ),
+        nextPhrase: makePage(
+          "none",
+          "<speak></speak>",
+          "<speak></speak>",
+          secondTransformerList
+        ),
+      };
       speechOutput = "";
       handlerInput.responseBuilder
-      .addDirective( 
-        {
-          type: 'Alexa.Presentation.APL.RenderDocument',
-          version: '1.1',
-          document : APL_DOC  ,
-          datasources : payload ,
-          token : TOKEN_ID ,
+        .addDirective({
+          type: "Alexa.Presentation.APL.RenderDocument",
+          version: "1.1",
+          document: APL_DOC,
+          datasources: payload,
+          token: TOKEN_ID,
         })
-        .addDirective (
-          {
-            type: 'Alexa.Presentation.APL.ExecuteCommands',
-            token : TOKEN_ID ,
-            commands :
-            [
-              ONE_PAGER_COMMANDS
-            ]
-          }); 
+        .addDirective({
+          type: "Alexa.Presentation.APL.ExecuteCommands",
+          token: TOKEN_ID,
+          commands: [ONE_PAGER_COMMANDS],
+        });
     }
-    return handlerInput.responseBuilder.speak(speechOutput)
-      .getResponse();
+    return handlerInput.responseBuilder.speak(speechOutput).getResponse();
   },
 };
 
 const NoIntent = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent';
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "AMAZON.NoIntent"
+    );
   },
   handle(handlerInput) {
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    let speechOutput = 'Não sei responder isso!';
+    let speechOutput = "Não sei responder isso!";
     if (supportsDisplay(handlerInput)) {
       let payload = {
-        "phrase": makePage(speechOutput,"",`<speak>${speechOutput}</speak>`,firstTransformerList),
-        "nextPhrase": makePage("none","<speak></speak>","<speak></speak>",secondTransformerList)
-        };
+        phrase: makePage(
+          speechOutput,
+          "",
+          `<speak>${speechOutput}</speak>`,
+          firstTransformerList
+        ),
+        nextPhrase: makePage(
+          "none",
+          "<speak></speak>",
+          "<speak></speak>",
+          secondTransformerList
+        ),
+      };
       speechOutput = "";
       handlerInput.responseBuilder
-      .addDirective( 
-        {
-          type: 'Alexa.Presentation.APL.RenderDocument',
-          version: '1.1',
-          document : APL_DOC  ,
-          datasources : payload ,
-          token : TOKEN_ID ,
+        .addDirective({
+          type: "Alexa.Presentation.APL.RenderDocument",
+          version: "1.1",
+          document: APL_DOC,
+          datasources: payload,
+          token: TOKEN_ID,
         })
-        .addDirective (
-          {
-            type: 'Alexa.Presentation.APL.ExecuteCommands',
-            token : TOKEN_ID ,
-            commands :
-            [
-              ONE_PAGER_COMMANDS
-            ]
-          });
+        .addDirective({
+          type: "Alexa.Presentation.APL.ExecuteCommands",
+          token: TOKEN_ID,
+          commands: [ONE_PAGER_COMMANDS],
+        });
     }
     return handlerInput.responseBuilder.speak(speechOutput).getResponse();
   },
@@ -212,32 +245,37 @@ const ErrorHandler = {
   },
   handle(handlerInput, error) {
     console.log(`Error handled: ${error.message}`);
-    let speechOutput = 'Eu não entendi';
+    let speechOutput = "Eu não entendi";
     const repromptText = speechOutput;
     if (supportsDisplay(handlerInput)) {
       let payload = {
-        "phrase": makePage(speechOutput,speechOutput,`<speak>${speechOutput}</speak>`,firstTransformerList),
-        "nextPhrase": makePage("none","<speak></speak>","<speak></speak>",secondTransformerList)
-        };
+        phrase: makePage(
+          speechOutput,
+          speechOutput,
+          `<speak>${speechOutput}</speak>`,
+          firstTransformerList
+        ),
+        nextPhrase: makePage(
+          "none",
+          "<speak></speak>",
+          "<speak></speak>",
+          secondTransformerList
+        ),
+      };
       speechOutput = "";
       handlerInput.responseBuilder
-      .addDirective( 
-        {
-          type: 'Alexa.Presentation.APL.RenderDocument',
-          version: '1.1',
-          document : APL_DOC  ,
-          datasources : payload ,
-          token : TOKEN_ID ,
+        .addDirective({
+          type: "Alexa.Presentation.APL.RenderDocument",
+          version: "1.1",
+          document: APL_DOC,
+          datasources: payload,
+          token: TOKEN_ID,
         })
-        .addDirective (
-          {
-            type: 'Alexa.Presentation.APL.ExecuteCommands',
-            token : TOKEN_ID ,
-            commands :
-            [
-              TWO_PAGER_COMMANDS
-            ]
-          });
+        .addDirective({
+          type: "Alexa.Presentation.APL.ExecuteCommands",
+          token: TOKEN_ID,
+          commands: [TWO_PAGER_COMMANDS],
+        });
     }
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -253,7 +291,7 @@ exports.handler = skillBuilder
     StopIntent,
     CancelIntent,
     NoIntent,
-    SessionEndedRequest,
+    SessionEndedRequest
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();
