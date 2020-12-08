@@ -1,0 +1,49 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "dólar hoje",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "ConvertDollar",
+          "slots": [
+            {
+              "name": "BRL",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "qual valor do dólar hoje",
+            "quero saber quanto custa {BRL} em dólar",
+            "quero saber quanto é {BRL} em dolar",
+            "quero saber quanto são {BRL} em dólar",
+            "dólar hoje",
+            "quero saber {BRL} em dólar",
+            "{BRL} em dólar",
+            "{BRL} dólar",
+            "quanto é {BRL} em dólar"
+          ]
+        },
+        {
+          "name": "LaunchRequest"
+        }
+      ],
+      "types": []
+    }
+  }
+}
