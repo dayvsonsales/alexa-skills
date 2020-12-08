@@ -6,6 +6,7 @@ Some Alexa skills made by me just for fun.
 
 * Memes - ask alexa for a meme (in portuguese).  
 * Learning to count (aprendendo-a-contar) - learn to count up to 50 with alexa - for kids (in portuguese)
+* Today's dollar (dolar-hoje) - ask Alexa for today's dollar currency from USD to BRL
 
 # Usage
 
