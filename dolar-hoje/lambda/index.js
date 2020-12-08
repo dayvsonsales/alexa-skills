@@ -1,6 +1,8 @@
 const Alexa = require("ask-sdk-core");
 const api = require("./services/api");
 
+const formatNumberToBRL = require("./utils/formatNumber");
+
 const AMAZONCancelIntentHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -65,14 +67,46 @@ const ConvertDollarHandler = {
     const request = handlerInput.requestEnvelope.request;
     const responseBuilder = handlerInput.responseBuilder;
 
-    const { BRL = 1 } = request.intent.slots;
+    let { BRL } = request.intent.slots;
     const { data } = await api.get("/json/all/USD-BRL");
 
-    let say = `<say-as interpret-as="currency">${BRL.value}</say-as> ${
-      BRL.value > 1 ? "reais" : "real"
-    } está custando <say-as interpret-as="currency">${(
+    if (!BRL || !BRL.value || BRL.value == "?") {
+      BRL = { value: 1 };
+    }
+
+    let say = `R$${
+      BRL.value
+    } está custando aproximadamente $${formatNumberToBRL(
       Number(BRL.value) / Number(data.USD.bid)
-    ).toFixed(2)}</say-as> dólares`;
+    )}`;
+
+    return responseBuilder.speak(say).reprompt(say).getResponse();
+  },
+};
+
+const ConvertBRLHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return (
+      request.type === "IntentRequest" && request.intent.name === "ConvertBRL"
+    );
+  },
+  async handle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    const responseBuilder = handlerInput.responseBuilder;
+
+    let { USD } = request.intent.slots;
+    const { data } = await api.get("/json/all/USD-BRL");
+
+    if (!USD || !USD.value || USD.value == "?") {
+      USD = { value: 1 };
+    }
+
+    let say = `$${
+      USD.value
+    } está custando aproximadamente R$${formatNumberToBRL(
+      Number(USD.value) * Number(data.USD.bid)
+    )}`;
 
     return responseBuilder.speak(say).reprompt(say).getResponse();
   },
@@ -88,7 +122,9 @@ const LaunchRequestHandler = {
 
     const { data } = await api.get("/json/all/USD-BRL");
 
-    let say = `Um dolar hoje está custando <say-as interpret-as="currency">${data.USD.bid}</say-as> reais`;
+    let say = `$1 hoje está custando aproximadamente R$${formatNumberToBRL(
+      data.USD.bid
+    )}`;
 
     return responseBuilder.speak(say).reprompt(say).getResponse();
   },
@@ -130,6 +166,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
     ConvertDollarHandler,
+    ConvertBRLHandler,
     LaunchRequestHandler,
     SessionEndedHandler,
     AMAZONCancelIntentHandler,

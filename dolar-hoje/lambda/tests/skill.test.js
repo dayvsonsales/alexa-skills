@@ -31,14 +31,20 @@ it("should show the today's dolar value", async () => {
   const result = await alexa.launch();
 
   expect(result.response.outputSpeech.ssml).toContain(
-    'Um dolar hoje está custando <say-as interpret-as="currency">4.03</say-as>'
+    "$1 hoje está custando aproximadamente R$4,03"
   );
 });
 
-it("should calculate dollar value based on reais amount given", async () => {
+it("should calculate BRL value based on dollar amount given", async () => {
   const result = await alexa.intend("ConvertDollar", { BRL: 20 });
 
-  expect(result.response.outputSpeech.ssml).toContain("4.96");
+  expect(result.response.outputSpeech.ssml).toContain("4,96");
+});
+
+it("should calculate dollar value based on reais amount given", async () => {
+  const result = await alexa.intend("ConvertBRL", { USD: 20 });
+
+  expect(result.response.outputSpeech.ssml).toContain("80,6");
 });
 
 it("should stop the skill", async () => {
