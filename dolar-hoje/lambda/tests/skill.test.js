@@ -3,6 +3,8 @@ const path = require("path");
 
 const api = require("../services/api");
 
+const formatNumber = require("../utils/formatNumber");
+
 jest.spyOn(api, "get").mockImplementation(() => {
   return {
     data: {
@@ -38,13 +40,13 @@ it("should show the today's dolar value", async () => {
 it("should calculate BRL value based on dollar amount given", async () => {
   const result = await alexa.intend("ConvertDollar", { BRL: 20 });
 
-  expect(result.response.outputSpeech.ssml).toContain("4,96");
+  expect(result.response.outputSpeech.ssml).toContain(formatNumber(4.96));
 });
 
 it("should calculate dollar value based on reais amount given", async () => {
   const result = await alexa.intend("ConvertBRL", { USD: 20 });
 
-  expect(result.response.outputSpeech.ssml).toContain("80,6");
+  expect(result.response.outputSpeech.ssml).toContain(formatNumber(80.6));
 });
 
 it("should stop the skill", async () => {
