@@ -33,7 +33,7 @@ it("should show the today's dolar value", async () => {
   const result = await alexa.launch();
 
   expect(result.response.outputSpeech.ssml).toContain(
-    "$1 hoje está custando aproximadamente R$4,03"
+    `$1 hoje está custando aproximadamente R$${formatNumber(4.03)}`
   );
 });
 
